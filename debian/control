@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Dhiraj Shah <dhiraj.shah04@gmail.com>
 Build-Depends: debhelper-compat (= 13), python3
 Standards-Version: 4.6.0
-Homepage: https://github.com/dhirajshah/nepali-calendar
+Homepage: https://github.com/dhiraj-var/nepali-calendar
 
 Package: nepali-calendar
 Architecture: all
