@@ -8,7 +8,7 @@
 #   bash scripts/build-ppa.sh dhiraj-var noble
 #   bash scripts/build-ppa.sh dhiraj-var jammy
 #
-# Requirements: devscripts dput gnupg
+# Requirements: devscripts dput gnupg pip
 #   sudo apt install devscripts dput
 
 set -e
@@ -38,11 +38,20 @@ echo "    Exporting clean source from git..."
 git archive --format=tar.gz --prefix="${PKG}-${UPSTREAM}/" HEAD \
   | tar -C "$WORK" -xzf -
 
-# ── Create orig tarball (copy of the clean source) ───────────────────────
+# ── Vendor nepali-datetime into the source ───────────────────────────────
+# This goes into the orig tarball so Launchpad's build machine has it.
+echo "    Vendoring nepali-datetime into source..."
+pip install nepali-datetime \
+  --target "${SRC_DIR}/nepali_calendar/vendor" \
+  --no-deps -q
+# Remove __pycache__ to keep the orig tarball clean
+find "${SRC_DIR}/nepali_calendar/vendor" -name '__pycache__' -type d \
+  -exec rm -rf {} + 2>/dev/null || true
+find "${SRC_DIR}/nepali_calendar/vendor" -name '*.pyc' -delete 2>/dev/null || true
+
+# ── Create orig tarball (includes vendored nepali-datetime) ──────────────
 echo "    Creating orig tarball..."
-tar -C "$WORK" -czf "${WORK}/${PKG}_${UPSTREAM}.orig.tar.gz" \
-  --transform "s|^${PKG}-${UPSTREAM}|${PKG}-${UPSTREAM}|" \
-  "${PKG}-${UPSTREAM}"
+tar -C "$WORK" -czf "${WORK}/${PKG}_${UPSTREAM}.orig.tar.gz" "${PKG}-${UPSTREAM}"
 
 # ── Inject PPA changelog entry ───────────────────────────────────────────
 echo "    Setting changelog to ${DEB_VERSION}..."
@@ -54,10 +63,9 @@ echo "    Setting changelog to ${DEB_VERSION}..."
 } > "${SRC_DIR}/debian/changelog.new"
 mv "${SRC_DIR}/debian/changelog.new" "${SRC_DIR}/debian/changelog"
 
-# ── Build source package with dpkg-buildpackage ──────────────────────────
+# ── Build source package ──────────────────────────────────────────────────
 # -S  source only, -sa include orig tarball, -d skip build-dep check,
-# -nc skip rules clean (dh not installed locally; Launchpad has it),
-# --no-sign  we sign manually below so debsign can verify
+# -nc skip rules clean (dh not installed locally; Launchpad has it)
 echo "    Building source package..."
 cd "$SRC_DIR"
 dpkg-buildpackage -S -sa -d -nc --no-sign 2>&1
