@@ -7,7 +7,6 @@
 # Examples:
 #   bash scripts/build-ppa.sh dhiraj-var noble
 #   bash scripts/build-ppa.sh dhiraj-var jammy
-#   bash scripts/build-ppa.sh dhiraj-var          # defaults to noble
 #
 # Requirements: devscripts dput gnupg
 #   sudo apt install devscripts dput
@@ -16,59 +15,63 @@ set -e
 
 LP_USER="${1:?Usage: $0 <launchpad-username> [noble|jammy]}"
 DISTRO="${2:-noble}"
-PPA_NAME="nepali-calendar"
+PPA_NAME="nep-cal"
+GPG_KEY="C0EE327CB245017BC39CDE08772B6CA2FBED84BE"
 
 cd "$(dirname "$0")/.."
 ROOT=$(pwd)
 
-# ── Version ─────────────────────────────────────────────────────────────
 UPSTREAM=$(python3 -c \
   "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
 DEB_VERSION="${UPSTREAM}-1ppa1~${DISTRO}1"
+PKG="nepali-calendar"
 
-echo "==> Building source package ${UPSTREAM}-1ppa1~${DISTRO}1 for ${DISTRO}"
+echo "==> Building ${PKG} ${DEB_VERSION} for ${DISTRO}"
 
-# ── Orig tarball ─────────────────────────────────────────────────────────
-ORIG_DIR="$(dirname "$ROOT")"
-ORIG_TAR="${ORIG_DIR}/nepali-calendar_${UPSTREAM}.orig.tar.gz"
+# ── Clean temp working directory ─────────────────────────────────────────
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+SRC_DIR="${WORK}/${PKG}-${UPSTREAM}"
 
-if [ ! -f "$ORIG_TAR" ]; then
-  echo "    Creating orig tarball..."
-  git archive --format=tar.gz \
-    --prefix="nepali-calendar-${UPSTREAM}/" \
-    HEAD > "$ORIG_TAR"
-fi
+# ── Export clean source from git ─────────────────────────────────────────
+echo "    Exporting clean source from git..."
+git archive --format=tar.gz --prefix="${PKG}-${UPSTREAM}/" HEAD \
+  | tar -C "$WORK" -xzf -
 
-# ── Patch changelog for this distro/version ──────────────────────────────
-echo "    Updating debian/changelog for ${DISTRO}..."
-ORIG_CHANGELOG=$(cat debian/changelog)
-cat > debian/changelog <<EOF
-nepali-calendar (${DEB_VERSION}) ${DISTRO}; urgency=low
+# ── Create orig tarball (copy of the clean source) ───────────────────────
+echo "    Creating orig tarball..."
+tar -C "$WORK" -czf "${WORK}/${PKG}_${UPSTREAM}.orig.tar.gz" \
+  --transform "s|^${PKG}-${UPSTREAM}|${PKG}-${UPSTREAM}|" \
+  "${PKG}-${UPSTREAM}"
 
-  * PPA build for Ubuntu ${DISTRO}.
+# ── Inject PPA changelog entry ───────────────────────────────────────────
+echo "    Setting changelog to ${DEB_VERSION}..."
+{
+  printf '%s (%s) %s; urgency=low\n\n' "$PKG" "$DEB_VERSION" "$DISTRO"
+  printf '  * PPA build for Ubuntu %s.\n\n' "$DISTRO"
+  printf ' -- Dhiraj Shah <me.dhirajshah@gmail.com>  %s\n\n' "$(date -R)"
+  cat "${SRC_DIR}/debian/changelog"
+} > "${SRC_DIR}/debian/changelog.new"
+mv "${SRC_DIR}/debian/changelog.new" "${SRC_DIR}/debian/changelog"
 
- -- Dhiraj Shah <me.dhirajshah@gmail.com>  $(date -R)
+# ── Build source package with dpkg-buildpackage ──────────────────────────
+# -S  source only, -sa include orig tarball, -d skip build-dep check,
+# -nc skip rules clean (dh not installed locally; Launchpad has it),
+# --no-sign  we sign manually below so debsign can verify
+echo "    Building source package..."
+cd "$SRC_DIR"
+dpkg-buildpackage -S -sa -d -nc --no-sign 2>&1
 
-EOF
-echo "$ORIG_CHANGELOG" >> debian/changelog
-
-# ── Build source package ─────────────────────────────────────────────────
-echo "    Running debuild -S -sa..."
-GPG_KEY="C0EE327CB245017BC39CDE08772B6CA2FBED84BE"
-debuild -S -sa \
-  -k"$GPG_KEY" \
-  --no-lintian 2>&1
-
-# Restore original changelog
-echo "$ORIG_CHANGELOG" > debian/changelog
+# ── Sign .dsc and .changes ───────────────────────────────────────────────
+cd "$WORK"
+echo "    Signing..."
+debsign -k"$GPG_KEY" "${PKG}_${DEB_VERSION}_source.changes"
 
 # ── Upload ───────────────────────────────────────────────────────────────
-CHANGES_FILE="${ORIG_DIR}/nepali-calendar_${DEB_VERSION}_source.changes"
-
 echo ""
 echo "==> Uploading to ppa:${LP_USER}/${PPA_NAME} ..."
-dput "ppa:${LP_USER}/${PPA_NAME}" "$CHANGES_FILE"
+dput "ppa:${LP_USER}/${PPA_NAME}" "${WORK}/${PKG}_${DEB_VERSION}_source.changes"
 
 echo ""
-echo "==> Done! Check build status at:"
+echo "==> Done! Build status:"
 echo "    https://launchpad.net/~${LP_USER}/+archive/ubuntu/${PPA_NAME}/+packages"
