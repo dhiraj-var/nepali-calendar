@@ -1,0 +1,40 @@
+nepali-calendar (1.1.2-1) unstable; urgency=low
+
+  * Window-level GestureDrag with CAPTURE phase fixes swipe on Wayland.
+  * Week view redesigned: self-contained day cards with day name inside each card.
+  * Removed stale swipe callbacks from CalendarView and WeekView.
+
+ -- Dhiraj Shah <me.dhirajshah@gmail.com>  Sun, 04 May 2026 00:00:00 +0545
+
+nepali-calendar (1.1.1-1) unstable; urgency=low
+
+  * Swipe gesture switched to GestureDrag with CAPTURE propagation phase.
+  * Week view cards redesigned: weekday name inside each card at top.
+  * Today card gets accent-tinted background; Saturday card uses red text.
+
+ -- Dhiraj Shah <me.dhirajshah@gmail.com>  Sun, 04 May 2026 00:00:00 +0545
+
+nepali-calendar (1.1.0-1) unstable; urgency=low
+
+  * BS/AD toggle button label now updates correctly.
+  * Today circle perfectly centered using Gtk.Overlay fixed-size box.
+  * EN/NP language toggle added; all labels and numbers switch languages.
+  * Week view, Month view, Year view with Adw.ViewSwitcher tab bar.
+  * Swipe left/right gesture for month and week navigation.
+  * Full Nepali weekday names in Devanagari script.
+  * Font sizes increased; AD mode header shows correct AD month/year.
+  * Language preference persisted in settings.json.
+
+ -- Dhiraj Shah <me.dhirajshah@gmail.com>  Sun, 04 May 2026 00:00:00 +0545
+
+nepali-calendar (1.0.0-1) unstable; urgency=low
+
+  * Initial release.
+  * GTK4 + libadwaita native desktop calendar.
+  * Nepali Bikram Sambat (BS) primary view with AD secondary dates.
+  * Public holiday highlighting for BS 2080-2086.
+  * BS/AD mode toggle, today accent, light/dark mode support.
+  * Window state persistence via ~/.config/nepali-calendar/settings.json.
+  * nepali-datetime 1.0.8 bundled as vendor dependency.
+
+ -- Dhiraj Shah <me.dhirajshah@gmail.com>  Sun, 04 May 2026 00:00:00 +0545

@@ -1,0 +1,150 @@
+/* Calendar grid container */
+.calendar-grid {
+    padding: 6px;
+}
+
+/* Weekday header labels */
+.weekday-header {
+    font-size: 0.82em;
+    font-weight: bold;
+    opacity: 0.55;
+    padding: 6px 2px;
+}
+
+/* Each day cell */
+.day-cell {
+    min-width: 72px;
+    min-height: 68px;
+    border-radius: 8px;
+    margin: 2px;
+    padding: 4px;
+}
+
+.day-cell:hover {
+    background-color: alpha(@accent_bg_color, 0.12);
+}
+
+/* Today highlight — circle behind the date number */
+.today-circle {
+    background-color: @accent_bg_color;
+    border-radius: 9999px;
+}
+
+.today-primary {
+    color: @accent_fg_color;
+    font-weight: bold;
+}
+
+/* Primary date label (large) */
+.primary-date {
+    font-size: 1.45em;
+    font-weight: 500;
+}
+
+/* Secondary date label (small, muted — AD date shown in BS mode, vice-versa) */
+.secondary-date {
+    font-size: 0.82em;
+    opacity: 0.55;
+}
+
+/* Saturday column */
+.saturday {
+    color: #e53935;
+}
+
+/* Holiday text */
+.holiday {
+    color: #e53935;
+}
+
+/* Days outside the current month */
+.outside-month {
+    opacity: 0.28;
+}
+
+/* ── Week view — card design ── */
+
+.week-card {
+    border-radius: 14px;
+    border: 1px solid alpha(@borders, 0.35);
+    margin: 3px;
+    background-color: alpha(@card_bg_color, 0.55);
+    min-width: 64px;
+}
+
+.week-card:hover {
+    background-color: alpha(@accent_bg_color, 0.1);
+}
+
+.week-card-today {
+    background-color: alpha(@accent_bg_color, 0.13);
+    border: 1.5px solid alpha(@accent_bg_color, 0.5);
+}
+
+.week-card-saturday {
+    /* subtle tint handled via text color only */
+}
+
+.week-day-name {
+    font-size: 0.75em;
+    font-weight: bold;
+    opacity: 0.5;
+    letter-spacing: 0.02em;
+}
+
+.week-day-name-today {
+    color: @accent_color;
+    opacity: 1;
+}
+
+.week-day-name-saturday {
+    color: #e53935;
+    opacity: 0.85;
+}
+
+.week-primary-date {
+    font-size: 1.75em;
+    font-weight: 500;
+}
+
+/* ── Year view ── */
+.mini-month {
+    background-color: alpha(@window_bg_color, 0.6);
+    border-radius: 10px;
+    padding: 8px;
+    border: 1px solid alpha(@borders, 0.4);
+}
+
+.mini-month:hover {
+    background-color: alpha(@accent_bg_color, 0.1);
+}
+
+.mini-month-title {
+    font-size: 0.85em;
+    font-weight: bold;
+    padding-bottom: 4px;
+}
+
+.mini-weekday {
+    font-size: 0.65em;
+    opacity: 0.5;
+    padding: 1px;
+}
+
+.mini-day {
+    font-size: 0.72em;
+    padding: 1px 2px;
+    border-radius: 999px;
+    min-width: 18px;
+    min-height: 18px;
+}
+
+.mini-today {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+    font-weight: bold;
+}
+
+.mini-saturday {
+    color: #e53935;
+}

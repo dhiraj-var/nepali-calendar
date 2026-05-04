@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Nepali Calendar
+Name[ne]=नेपाली पात्रो
+Comment=Bikram Sambat calendar for Linux
+Comment[ne]=लिनक्सको लागि बिक्रम संबत पात्रो
+Exec=nepali-calendar
+Icon=nepali-calendar
+Terminal=false
+Categories=Utility;Calendar;
+Keywords=nepali;calendar;bikram;sambat;patro;नेपाली;पात्रो;
+StartupNotify=true
+StartupWMClass=nepali-calendar

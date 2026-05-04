@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	# Install Python package
+	python3 -m pip install --no-deps --target=$(CURDIR)/debian/nepali-calendar/usr/share/nepali-calendar/lib \
+		. 2>/dev/null || true
+	# Install app files manually
+	install -d $(CURDIR)/debian/nepali-calendar/usr/share/nepali-calendar
+	cp -r nepali_calendar $(CURDIR)/debian/nepali-calendar/usr/share/nepali-calendar/
+	# Install vendored nepali-datetime
+	if [ -d nepali_calendar/vendor ]; then \
+		cp -r nepali_calendar/vendor $(CURDIR)/debian/nepali-calendar/usr/share/nepali-calendar/; \
+	fi
+	# Install launcher
+	install -d $(CURDIR)/debian/nepali-calendar/usr/bin
+	install -m 755 scripts/nepali-calendar.sh $(CURDIR)/debian/nepali-calendar/usr/bin/nepali-calendar
+	# Install .desktop file
+	install -d $(CURDIR)/debian/nepali-calendar/usr/share/applications
+	install -m 644 data/nepali.calendar.desktop $(CURDIR)/debian/nepali-calendar/usr/share/applications/
+	# Install icon
+	install -d $(CURDIR)/debian/nepali-calendar/usr/share/icons/hicolor/scalable/apps
+	install -m 644 data/icons/nepali-calendar.svg \
+		$(CURDIR)/debian/nepali-calendar/usr/share/icons/hicolor/scalable/apps/
+
+override_dh_auto_test:
+	# Skip tests

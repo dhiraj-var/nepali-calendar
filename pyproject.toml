@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "nepali-calendar"
+version = "1.1.2"
+description = "Nepali Bikram Sambat calendar desktop app for Linux"
+requires-python = ">=3.8"
+dependencies = ["nepali-datetime>=1.0"]
+
+[project.scripts]
+nepali-calendar = "nepali_calendar.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nepali_calendar*"]
+
+[tool.setuptools.package-data]
+nepali_calendar = ["data/*"]

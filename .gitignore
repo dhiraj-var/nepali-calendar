@@ -1,0 +1,26 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+nepali_calendar/vendor/
+.mypy_cache/
+
+# Claude Code
+.claude/
+
+# Debian build artifacts
+*.deb
+*.changes
+*.buildinfo
+*.upload
+*.dsc
+*.orig.tar.gz
+*.tar.xz
+_build/
+
+# Misc
+*.log
+.env
